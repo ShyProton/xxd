@@ -1,0 +1,6 @@
+obj/
+xxd
+
+# TODO: Create a test dir
+input.txt
+output.txt
