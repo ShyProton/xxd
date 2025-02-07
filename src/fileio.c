@@ -15,17 +15,21 @@ void open_read_write_files(FILE **p_infile, FILE **p_outfile, char *inpath,
 
   if (*p_outfile == NULL) {
     perror("Opening output file failed");
-    fclose(*p_infile);
+    close_read_write_files(p_infile, p_outfile);
     exit(EXIT_FAILURE);
   }
 }
 
 void close_read_write_files(FILE **p_infile, FILE **p_outfile) {
-  if (fclose(*p_infile) == EXIT_FAILURE) {
-    perror("Closing input file failed");
-  }
+  if (*p_infile == NULL)
+    return;
 
-  if (fclose(*p_outfile) == EXIT_FAILURE) {
+  if (*p_outfile == NULL)
+    return;
+
+  if (fclose(*p_infile) == EXIT_FAILURE)
+    perror("Closing input file failed");
+
+  if (fclose(*p_outfile) == EXIT_FAILURE)
     perror("Closing output file failed");
-  }
 }
