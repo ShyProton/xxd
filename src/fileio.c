@@ -34,6 +34,7 @@ void fread_to_buf(char *fpath, char **p_buf) {
 
   rewind(file);
 
+  // Allocating number of characters + 1 for the null terminator.
   *p_buf = calloc(num_chars + 1, sizeof(char));
 
   if (*p_buf == NULL) {

@@ -2,20 +2,21 @@
 #include <stdio.h>
 #include <string.h>
 
-static void whitespace_convert(char *c) {
-  switch (*c) {
+static void whitespace_convert(char *p_char) {
+  switch (*p_char) {
   case '\n':
-    *c = '.';
+    *p_char = '.';
   }
 }
 
-static void get_chunk(Chunk *chunk, char **str, size_t nth_chunk,
+static void get_chunk(Chunk *chunk, char **p_str, size_t nth_chunk,
                       size_t chunk_size) {
+  // Allocating chunk size + 1 for the null terminator.
   chunk->text = calloc(chunk_size + 1, sizeof(char));
 
   if (chunk->text == NULL) {
     perror("Out of memory");
-    free(*str);
+    free(*p_str);
     exit(EXIT_FAILURE);
   }
 
@@ -23,29 +24,30 @@ static void get_chunk(Chunk *chunk, char **str, size_t nth_chunk,
   size_t strchar_idx = nth_chunk * chunk_size;
 
   for (size_t i = 0; i < chunk_size; i++) {
-    strchar = (*str)[strchar_idx];
+    strchar = (*p_str)[strchar_idx];
     whitespace_convert(&strchar); // So we can see whitespace characters.
 
     chunk->text[i] = strchar;
     strchar_idx++;
   }
 
+  // Null-terminate the text.
   chunk->text[chunk_size] = '\0';
 }
 
-size_t chunk_str(Chunk *chunks[], char *str, size_t chunk_size) {
+size_t chunk_str(Chunk *p_chunks[], char *str, size_t chunk_size) {
   size_t num_chunks = (strlen(str) / chunk_size) + 1;
 
-  *chunks = calloc(num_chunks, sizeof(Chunk));
+  *p_chunks = calloc(num_chunks, sizeof(Chunk));
 
-  if (*chunks == NULL) {
+  if (*p_chunks == NULL) {
     perror("Out of memory");
     free(str);
     exit(EXIT_FAILURE);
   }
 
   for (size_t i = 0; i < num_chunks; i++) {
-    get_chunk(&(*chunks)[i], &str, i, chunk_size);
+    get_chunk(&(*p_chunks)[i], &str, i, chunk_size);
   }
 
   free(str);
