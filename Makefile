@@ -16,6 +16,9 @@ TARGET = xxd
 # Default rule
 all: $(TARGET)
 
+debug:
+	gcc -g $(SRCS)
+
 # Linking
 $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^

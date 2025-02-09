@@ -2,34 +2,53 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void open_read_write_files(FILE **p_infile, FILE **p_outfile, char *inpath,
-                           char *outpath) {
-  *p_infile = fopen(inpath, "r");
+static void open_file(FILE **p_file, char *fpath, char *modes) {
+  *p_file = fopen(fpath, modes);
 
-  if (*p_infile == NULL) {
-    perror("Opening input file failed");
-    exit(EXIT_FAILURE);
-  }
-
-  *p_outfile = fopen(outpath, "w");
-
-  if (*p_outfile == NULL) {
-    perror("Opening output file failed");
-    close_read_write_files(p_infile, p_outfile);
+  if (*p_file == NULL) {
+    fprintf(stderr, "Opening file '%s' failed", fpath);
+    perror(NULL);
     exit(EXIT_FAILURE);
   }
 }
 
-void close_read_write_files(FILE **p_infile, FILE **p_outfile) {
-  if (*p_infile == NULL)
-    return;
+void fread_to_buf(char *fpath, char **p_buf) {
+  FILE *file;
+  long num_chars;
 
-  if (*p_outfile == NULL)
-    return;
+  open_file(&file, fpath, "r");
 
-  if (fclose(*p_infile) == EXIT_FAILURE)
-    perror("Closing input file failed");
+  if (fseek(file, 0L, SEEK_END) != EXIT_SUCCESS) {
+    perror("Could not read file");
+    fclose(file);
+    exit(EXIT_FAILURE);
+  }
 
-  if (fclose(*p_outfile) == EXIT_FAILURE)
-    perror("Closing output file failed");
+  num_chars = ftell(file);
+
+  if (num_chars == -1) {
+    perror("Could not read file");
+    fclose(file);
+    exit(EXIT_FAILURE);
+  }
+
+  rewind(file);
+
+  *p_buf = calloc(num_chars + 1, sizeof(char));
+
+  if (*p_buf == NULL) {
+    perror("Out of memory");
+    fclose(file);
+    exit(EXIT_FAILURE);
+  }
+
+  fread(*p_buf, sizeof(char), num_chars, file);
+
+  if (ferror(file) != EXIT_SUCCESS) {
+    perror("Could not read file");
+    fclose(file);
+    exit(EXIT_FAILURE);
+  }
+
+  fclose(file);
 }

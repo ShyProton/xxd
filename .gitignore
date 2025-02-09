@@ -1,6 +1,12 @@
+# Compiled stuff
 obj/
+*.out
 xxd
 
+# Debugging
+vgcore.*
+
+# Testing
 # TODO: Create a test dir
 input.txt
 output.txt
